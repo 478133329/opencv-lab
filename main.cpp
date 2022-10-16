@@ -2,8 +2,7 @@
 #include <unordered_map>
 #include "hist.h"
 #include "gray.h"
-
-int bins = 256;
+#include "filtering.h"
 
 void showImgsAndHistImgs(vector<Mat*> vec)
 {
@@ -42,7 +41,7 @@ void showImgsAndHistImgs(vector<Mat*> vec)
 // 二值变换
 void demo1()
 {
-	Mat src_img = imread("qingdao.jpg");
+	Mat src_img = imread("img/qingdao.jpg");
 	resize(src_img, src_img, Size(1280, 960));
 	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	Mat bin_img = bin_val(src_img, 128);
@@ -136,9 +135,33 @@ void demo5()
 	imshow("规定化原图灰度图直方图", matched_img_hist_img);
 }
 
+// 图像平滑处理
+void demo6() {
+	Mat src_img = imread("img/qingdao.jpg");
+	Mat mean_smoothing_img = Mat::zeros(src_img.size(), src_img.type());
+	get_mean_smoothing_img(src_img, mean_smoothing_img, Size(3, 3));
+	namedWindow("原图", WINDOW_NORMAL);
+	imshow("原图", src_img);
+	namedWindow("均值平滑处理图", WINDOW_NORMAL);
+	imshow("均值平滑处理图", mean_smoothing_img);
+}
+
+// 彩色图像平滑处理
+void demo7() {
+	Mat src_img = imread("img/qingdao.jpg");
+	Mat mask, gauss_smoothing_img;
+	get_gauss_mask(mask, Size(5, 5), 0.8);
+	get_gauss_smoothing_img(src_img, gauss_smoothing_img, mask);
+	namedWindow("原图", WINDOW_NORMAL);
+	imshow("原图", src_img);
+	namedWindow("高斯平滑处理图", WINDOW_NORMAL);
+	imshow("高斯平滑处理图", gauss_smoothing_img);
+}
+
 int main()
 {
-	cout << "1:二值变换" << endl << "2:灰度变换" << endl << "3:补色变换" << endl << "4:彩色图和灰度图的直方图均衡化" << endl << "5:灰度图的直方图规定化" << endl;
+	cout << "1:二值变换" << endl << "2:灰度变换" << endl << "3:补色变换" << endl << "4:彩色图和灰度图的直方图均衡化" << endl << "5:灰度图的直方图规定化" << endl << "6:灰度图像平滑处理" << endl
+		<< "7:彩色图像平滑处理" << endl;
 	int flag;
 	cin >> flag;
 	switch (flag)
@@ -162,6 +185,20 @@ int main()
 	case 5:
 		// 合成一张图
 		demo5();
+		break;
+	case 6:
+		// 灰度图像平滑处理
+		demo6();
+		break;
+	case 7:
+		// 彩色图像平滑处理
+		demo7();
+		break;
+	case 99:
+		// test
+	{	
+
+	}
 		break;
 	default:
 		cout << "input error." << endl;

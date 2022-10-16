@@ -137,8 +137,10 @@
     <ClCompile Include="gray.cpp" />
     <ClCompile Include="hist.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="filtering.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="filtering.h" />
     <ClInclude Include="gray.h" />
     <ClInclude Include="hist.h" />
   </ItemGroup>
