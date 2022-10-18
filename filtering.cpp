@@ -134,3 +134,136 @@ void get_gauss_smoothing_img(const Mat& src, Mat& dst, Mat mask)
 		}
 	}
 }
+
+void get_enhance_filter_img(const Mat& src, Mat& dst, Size ksize, double k) {
+	Mat src_mean = src.clone();
+	get_mean_smoothing_img(src, src_mean, ksize);
+	int mask = 0;
+	for (int i = 0; i < src.rows; i++) {
+		for (int j = 0; j < src.cols; j++) {
+			mask = src.at<uchar>(i, j) - src_mean.at<uchar>(i, j);
+			dst.at<uchar>(i, j) = src.at<uchar>(i, j) + mask * k;
+		}
+	}
+}
+
+void filter(const Mat& src, Mat& dst, int ksize, double** templateMatrix) {
+	assert(src.channels() || src.channels() == 3);
+	//使用模板进行平滑处理
+	int border = ksize / 2;
+	copyMakeBorder(src, dst, border, border, border, border, BorderTypes::BORDER_REFLECT);
+	int channels = src.channels();
+	int cols = dst.cols - border;
+	int rows = dst.rows - border;
+	for (int i = border; i < rows; i++) {
+		for (int j = border; j < cols; j++) {
+			double sum[3] = { 0 };
+			for (int k = -border; k <= border; k++) {
+				for (int m = -border; m <= border; m++) {
+					if (channels == 1) {
+						sum[0] += (double)templateMatrix[k + border][k + border] * dst.at<uchar>(i + k, j + m);
+					}
+					else if (channels == 3) {
+						Vec3b rgb = dst.at<Vec3b>(i + k, j + m);
+						auto tmp = templateMatrix[border + k][border + m];
+						sum[0] += tmp * rgb[0];
+						sum[1] += tmp * rgb[1];
+						sum[2] += tmp * rgb[2];
+					}
+				}
+			}
+			//限定像素值在0-255之间
+			for (int i = 0; i < channels; i++) {
+				if (sum[i] < 0)
+					sum[i] = 0;
+				else if (sum[i] > 255)
+					sum[i] = 255;
+			}
+			//
+			if (channels == 1) {
+				dst.at<uchar>(i, j) = static_cast<uchar>(sum[0]);
+			}
+			else if (channels == 3) {
+				//Vec3b rgb = { static_cast<uchar>(sum[0]), static_cast<uchar>(sum[1]), static_cast<uchar>(sum[2]) };
+				Vec3b rgb;
+				rgb[0] = static_cast<uchar>(sum[0]);
+				rgb[1] = static_cast<uchar>(sum[1]);
+				rgb[2] = static_cast<uchar>(sum[2]);
+
+				dst.at<Vec3b>(i, j) = rgb;
+			}
+		}
+	}
+	for (int i = 0; i < ksize; i++)
+		delete[] templateMatrix[i];
+	delete[] templateMatrix;
+}
+
+void get_laplacian_img(const Mat& src, Mat& dst) {
+	vector<double> list = { -1, -1, -1, -1, 4, -1, -1, -1, -1 };
+	double** templateMatrix = new double* [3];
+	for (int i = 0; i < 3; i++) {
+		templateMatrix[i] = new double[3];
+	}
+	int k = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			templateMatrix[i][j] = list[k++];
+		}
+	}
+	filter(src, dst, 3, templateMatrix);
+}
+
+void get_rob_sob_img(const Mat& src, Mat& dst, int x[][3], int y[][3]) {
+	int border = 1;
+	copyMakeBorder(src, dst, border, border, border, border, BorderTypes::BORDER_REFLECT);
+	int channels = src.channels();
+	int cols = dst.cols - border;
+	int rows = dst.rows - border;
+	for (int i = border; i < rows; i++) {
+		for (int j = border; j < cols; j++) {
+			int sum[3][3] = { 0 };
+			for (int k = -border; k <= border; k++) {
+				for (int m = -border; m <= border; m++) {
+					if (channels == 1) {
+						sum[0][0] += (int)x[k + border][k + border] * dst.at<uchar>(i + k, j + m);
+						sum[0][1] += (int)y[k + border][k + border] * dst.at<uchar>(i + k, j + m);
+					}
+					else if (channels == 3) {
+						Vec3b rgb = dst.at<Vec3b>(i + k, j + m);
+						auto tmp1 = x[border + k][border + m];
+						auto tmp2 = y[border + k][border + m];
+						sum[0][0] += tmp1 * rgb[0];
+						sum[1][0] += tmp1 * rgb[1];
+						sum[2][0] += tmp1 * rgb[2];
+						sum[0][1] += tmp2 * rgb[0];
+						sum[1][1] += tmp2 * rgb[1];
+						sum[2][1] += tmp2 * rgb[2];
+					}
+				}
+			}
+			//限定像素值在0-255之间
+			for (int i = 0; i < channels; i++) {
+				sum[i][2] = sum[i][0] + sum[i][1];
+				if (sum[i][2] < 0)
+					sum[i][2] = 0;
+				else if (sum[i][3] > 255)
+					sum[i][2] = 255;
+			}
+			//
+			if (channels == 1) {
+				dst.at<uchar>(i, j) = static_cast<uchar>(sum[0][2]);
+			}
+			else if (channels == 3) {
+				//Vec3b rgb = { static_cast<uchar>(sum[0]), static_cast<uchar>(sum[1]), static_cast<uchar>(sum[2]) };
+				Vec3b rgb;
+				rgb[0] = static_cast<uchar>(sum[0][2]);
+				rgb[1] = static_cast<uchar>(sum[1][2]);
+				rgb[2] = static_cast<uchar>(sum[2][2]);
+
+				dst.at<Vec3b>(i, j) = rgb;
+			}
+		}
+	}
+}
+

@@ -1,2 +1,5 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(534,5): warning MSB8028: 中间目录(x64\Debug\)包含从另一个项目(HistMatching.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  main.cpp
+D:\VisualStudioWorkspace\cvStudy\cvStudy\main.cpp(10,26): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\VisualStudioWorkspace\cvStudy\cvStudy\main.cpp(62,39): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
   cvStudy.vcxproj -> D:\VisualStudioWorkspace\cvStudy\x64\Debug\cvStudy.exe
