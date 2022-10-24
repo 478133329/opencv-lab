@@ -156,7 +156,7 @@ void demo6()
 // 高提升滤波算法
 void demo7()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
 	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	Mat enhance_filter_img = Mat::zeros(src_img.size(), src_img.type());
 	get_enhance_filter_img(src_img, enhance_filter_img, Size(5, 5), 0.5);
@@ -169,7 +169,7 @@ void demo7()
 // Laplacian、Robert、Sobel模板锐化图像
 void demo8()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
 	Mat laplacian_img = Mat::zeros(src_img.size(), src_img.type());
 	Mat rob_img = Mat::zeros(src_img.size(), src_img.type());
 	Mat sob_img = Mat::zeros(src_img.size(), src_img.type());
@@ -217,12 +217,13 @@ void demo9()
 
 void demo10()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
+	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	Mat salt_img = salt_pepper_noise(src_img, 10000, 255);
 	Mat pepper_img = salt_pepper_noise(src_img, 10000, 0);
 	Mat salt_pepper_img = salt_pepper_noise(salt_img, 10000, 0);
-	namedWindow("椒盐噪声", WINDOW_NORMAL);
-	imshow("椒盐噪声", salt_pepper_img);
+	namedWindow("原图", WINDOW_NORMAL);
+	imshow("原图", src_img);
 	Mat arithmetic_mean_img = filter_process(salt_pepper_img, arithmetic_mean_kernel, 5);
 	namedWindow("算术平均滤波", WINDOW_NORMAL);
 	imshow("算术平均滤波", arithmetic_mean_img);
@@ -239,7 +240,8 @@ void demo10()
 
 void demo11()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
+	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	Mat gauss_noise_img = gauss_noise(src_img, 10, 20);
 	namedWindow("高斯噪声", WINDOW_NORMAL);
 	imshow("高斯噪声", gauss_noise_img);
@@ -259,7 +261,8 @@ void demo11()
 
 void demo12()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
+	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	resize(src_img, src_img, Size(300, 300));
 	Mat salt_img = salt_pepper_noise(src_img, 4000, 255);
 	Mat salt_pepper_img = salt_pepper_noise(salt_img, 4000, 0);
@@ -278,7 +281,8 @@ void demo12()
 
 void demo13()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
+	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	Mat gauss_noise_img = gauss_noise(src_img, 10, 20);
 	namedWindow("高斯噪声", WINDOW_NORMAL);
 	imshow("高斯噪声", gauss_noise_img);
@@ -289,7 +293,8 @@ void demo13()
 
 void demo14()
 {
-	Mat src_img = imread("img/qingdao.jpg");
+	Mat src_img = imread("img/1.jpg");
+	cvtColor(src_img, src_img, COLOR_RGB2GRAY);
 	resize(src_img, src_img, Size(300, 300));
 	Mat salt_img = salt_pepper_noise(src_img, 5000, 255);
 	Mat salt_pepper_img = salt_pepper_noise(salt_img, 5000, 0);
@@ -304,6 +309,53 @@ void demo14()
 	Mat gauss_adaptive_median_img = filter_process(gauss_noise_img, adaptive_median_kernel, 3);
 	namedWindow("高斯噪声自适应中值滤波", WINDOW_NORMAL);
 	imshow("高斯噪声自适应中值滤波", gauss_adaptive_median_img);
+}
+
+void test()
+{
+	Mat src_img = imread("img/qingdao.jpg");
+	Mat mean_smoothing_img3 = Mat::zeros(src_img.size(), src_img.type());
+	get_mean_smoothing_img(src_img, mean_smoothing_img3, Size(3, 3));
+	Mat mean_smoothing_img5 = Mat::zeros(src_img.size(), src_img.type());
+	get_mean_smoothing_img(src_img, mean_smoothing_img5, Size(5, 5));
+	Mat mean_smoothing_img7 = Mat::zeros(src_img.size(), src_img.type());
+	get_mean_smoothing_img(src_img, mean_smoothing_img7, Size(7, 7));
+	namedWindow("原图", WINDOW_NORMAL);
+	imshow("原图", src_img);
+	namedWindow("3*3均值平滑处理图", WINDOW_NORMAL);
+	imshow("3*3均值平滑处理图", mean_smoothing_img3);
+	namedWindow("5*5均值平滑处理图", WINDOW_NORMAL);
+	imshow("5*5均值平滑处理图", mean_smoothing_img5);
+	namedWindow("7*7均值平滑处理图", WINDOW_NORMAL);
+	imshow("7*7均值平滑处理图", mean_smoothing_img7);
+
+	//Mat src_img = imread("img/qingdao.jpg");
+	//cvtColor(src_img, src_img, COLOR_RGB2GRAY);
+	//Mat laplacian_img = Mat::zeros(src_img.size(), src_img.type());
+	//Mat rob_img = Mat::zeros(src_img.size(), src_img.type());
+	//Mat sob_img = Mat::zeros(src_img.size(), src_img.type());
+
+	//namedWindow("原图", WINDOW_NORMAL);
+	//imshow("原图", src_img);
+
+	////Laplacian
+	//get_laplacian_img(src_img, laplacian_img);
+	//namedWindow("Laplacian", WINDOW_NORMAL);
+	//imshow("Laplacian", laplacian_img);
+
+	////Robert
+	//int x[3][3] = { 0, 0, 0, 0, -1, 0, 0, 0, 1 };
+	//int y[3][3] = { 0, 0, 0, 0, 0, -1, 0, 1, 0 };
+	//get_rob_sob_img(src_img, rob_img, x, y);
+	//namedWindow("Robert", WINDOW_NORMAL);
+	//imshow("Robert", rob_img);
+
+	////Sobel
+	//int _x[3][3] = { -1, -2, -1, 0, 0, 0, -1, -2, -1 };
+	//int _y[3][3] = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+	//get_rob_sob_img(src_img, sob_img, x, y);
+	//namedWindow("Sobel", WINDOW_NORMAL);
+	//imshow("Sobel", sob_img);
 }
 
 int main()
@@ -359,9 +411,7 @@ int main()
 		break;
 	case 99:
 		// test
-	{	
-
-	}
+		test();
 		break;
 	default:
 		cout << "input error." << endl;
